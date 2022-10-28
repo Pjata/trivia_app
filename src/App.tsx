@@ -1,33 +1,51 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
+import Round from './components/Round/Round'
+import { Result, Task } from './model/model'
+
+/** Constant example for now */
+let exampleTask: Task = {
+  taskPhrase: 'Which of these seem a good idea?',
+  answers: [
+    {
+      text: 'Jumping into a rose bush',
+    },
+    {
+      text: 'Hiking',
+      isAnswer: true,
+    },
+    {
+      text: 'MTBking',
+      isAnswer: true,
+    },
+    {
+      text: 'Bang your head against the wall',
+    },
+  ],
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentTask, setCurentTask] = useState<Task>(exampleTask)
+
+  const results: Result[] = []
+  const next = () => {
+    console.log('NEXT')
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <Round
+      task={currentTask}
+      onSubmit={(result) => {
+        results.push(result)
+        console.log('resultS:', results)
+      }}
+      onNext={() => {
+        setCurentTask({
+          taskPhrase: 'Did you get the preious question right?',
+          answers: [{ text: 'Yes', isAnswer: true }, { text: 'No' }],
+        })
+      }}
+    />
   )
 }
 
