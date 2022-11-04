@@ -13,29 +13,29 @@ import {
 import { Result, Selection, Task } from '../../model/model'
 
 interface TaskManagerProps {
-  initialTask: Result
-  onSubmit?: (result: Result) => void
-  onNext?: (loadNextTask: (nextTask: Result) => void) => void
+  task: Result
+  onSubmit?: (selection: Selection) => void
+  onNext?: () => void
 }
 
 const TaskManager = ({
-  initialTask,
+  task,
   onSubmit = () => {},
   onNext,
 }: TaskManagerProps) => {
-  const [selection, setSelection] = useState<Selection>(initialTask.selection)
-  const [currentTask, setCurrentTask] = useState<Result>(initialTask)
-
-  const resetState = (withTask: Result) => {
-    setSelection(withTask.selection)
-  }
+  const [selection, setSelection] = useState<Selection>(task.selection)
 
   const updateSelection = function (value: Selection) {
+    console.log('---------------')
     setSelection(value)
   }
   const isAnswerCorrect = (index: number) =>
-    !!currentTask.task.answers[index].isAnswer ==
-    selection.includes(generateKey(currentTask.task, index))
+    !!task.task.answers[index].isAnswer ==
+    selection.includes(generateKey(task.task, index))
+
+  const isSubmitted = !!task.evaluation.length
+
+  console.log('[TaskManager] initial selection', selection)
 
   return (
     <>
@@ -52,9 +52,9 @@ const TaskManager = ({
               name={`multiple-selection-form`}
               onChange={updateSelection}
               defaultValue={selection}
-              description={currentTask.task.question}
+              description={task.task.question}
             >
-              {currentTask.task.answers.map((solutionOption, index) => {
+              {task.task.answers.map((solutionOption, index) => {
                 let labelColor, labelText: string
 
                 if (isAnswerCorrect(index)) {
@@ -64,30 +64,16 @@ const TaskManager = ({
                 }
 
                 return (
-                  <div
-                    className={`validated-answer validated-answer-${labelText}`}
-                    key={generateKey(currentTask.task, index)}
-                  >
-                    <Checkbox
-                      className="validated-answer-checkbox"
-                      as={'span'}
-                      label={solutionOption.text}
-                      defaultChecked={selection.includes(
-                        generateKey(currentTask.task, index)
-                      )}
-                      disabled={currentTask.submitted}
-                    />
-                    {currentTask.submitted ? (
-                      <span
-                        style={{ color: labelColor }}
-                        className={`verdict verdict-${labelText}`}
-                      >
-                        {labelText}
-                      </span>
-                    ) : (
-                      void 0
+                  <Checkbox
+                  key={generateKey(task.task, index)}
+                    className="validated-answer-checkbox"
+                    label={solutionOption.text}
+                    value={solutionOption.text}
+                    defaultChecked={selection.includes(
+                      generateKey(task.task, index)
                     )}
-                  </div>
+                    disabled={isSubmitted}
+                  />
                 )
               })}
             </CheckboxGroup>
@@ -98,57 +84,36 @@ const TaskManager = ({
         {onNext ? (
           <Button
             onClick={() => {
-              if (currentTask.submitted) {
-                onNext((nextTask: Result) => {
-                  console.log('[TaskManager] - Load next task', nextTask)
-                  setCurrentTask(nextTask)
-                  resetState(nextTask)
-                })
+              if (task.submitted) {
+                onNext()
               } else {
-                currentTask.submitted = true
-                currentTask.selection = [...selection]
-                currentTask.task.answers.forEach((option, index) =>
-                  currentTask.evaluation.push(
-                    !!option.isAnswer ==
-                      selection.includes(generateKey(currentTask.task, index))
-                  )
-                )
-                currentTask.verdict = currentTask.evaluation.every(
-                  (verdict) => verdict
-                )
-
-                onSubmit(currentTask)
-                setCurrentTask({ ...currentTask })
+                console.log('[TaskManager] onSubmit - selection', selection)
+                console.log('[TaskManager] onSubmit - task', task)
+                onSubmit(selection)
               }
             }}
           >
-            {currentTask.submitted ? 'Next question >' : 'Submit answer'}
+            {task.submitted ? 'Next question >' : 'Submit answer'}
           </Button>
         ) : (
           void 0
         )}
       </div>
-      {currentTask.submitted ? (
+      {task.submitted ? (
         <>
           <div className="feedback-elaboration margin-large margin-top-x-large margin-bottom-xx-large">
-            {currentTask.task.feedback ? (
+            {task.task.feedback ? (
               <div className="margin-large">
                 <Heading level="h3" className="feedback">
-                  {
-                    currentTask.task.feedback[
-                      !!currentTask.verdict ? 'positive' : 'negative'
-                    ]
-                  }
+                  {task.task.feedback[!!task.verdict ? 'positive' : 'negative']}
                 </Heading>
               </div>
             ) : (
               void 0
             )}
-            {currentTask.task.elaboration ? (
+            {task.task.elaboration ? (
               <div className="margin-large">
-                <Text className="elaboration">
-                  {currentTask.task.elaboration}
-                </Text>
+                <Text className="elaboration">{task.task.elaboration}</Text>
               </div>
             ) : (
               void 0

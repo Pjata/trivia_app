@@ -1,6 +1,6 @@
 import { Heading } from '@instructure/ui'
 import React, { useState } from 'react'
-import { Paper, Result, Task } from '../../model/model'
+import { Paper, Result, Selection, Task } from '../../model/model'
 import TaskManager from '../TaskManager/TaskManager'
 
 interface PaperManagerProps {
@@ -9,16 +9,37 @@ interface PaperManagerProps {
 
 const PaperManager = ({ paper }: PaperManagerProps) => {
   const [complete, setComplete] = useState<boolean>(false)
-  let index = 0
+  const [results, setResults] = useState<Result[]>([])
+  const [index, setIndex] = useState<number>(0)
 
-  const onNext = (loadNextTask: (nextTask: Result) => void) => {
+  const currentTask = paper.tasks[index]
+
+  const onNext = () => {
     console.log(paper)
-    index++
-    if (index >= paper.tasks.length) {
+
+    const nexIndex = index + 1
+
+    setIndex(nexIndex)
+    if (nexIndex >= paper.tasks.length) {
       setComplete(true)
-    } else {
-      loadNextTask(paper.tasks[index])
     }
+  }
+
+  const onSubmit = (selection: Selection) => {
+    console.log('[PaperManager] onSubmit', selection)
+
+    const task = {...currentTask}
+
+    task.submitted = true
+    task.selection = [...selection]
+
+    task.evaluation = task.task.answers.map((option, index) => !!option.isAnswer == selection.includes(generateKey(task.task, index)))
+  
+    task.verdict = task.evaluation.every(
+      (verdict) => verdict
+    )
+
+    setResults((currentResults) => [...currentResults, task])
   }
 
   return (
@@ -33,12 +54,12 @@ const PaperManager = ({ paper }: PaperManagerProps) => {
       {complete ? (
         paper.tasks.map((task, taskIndex) => (
           <TaskManager
-            initialTask={task}
+            task={task}
             key={generateKey(task.task, taskIndex)}
           />
         ))
       ) : (
-        <TaskManager initialTask={paper.tasks[index]} onNext={onNext} />
+        <TaskManager task={paper.tasks[index]} onNext={onNext} key={generateKey(currentTask.task, index)} onSubmit={onSubmit} />
       )}
       <div className="footer"></div>
     </>
