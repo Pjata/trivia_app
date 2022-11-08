@@ -6,23 +6,21 @@
 
 export type Selection = (string | number)[]
 
-export interface Task {
+export interface TaskDefinition {
+  id?: number
   question: string
-  answers: { text: string; isAnswer?: boolean }[]
+  answers: { id?: number, text: string; isAnswer?: boolean }[]
   feedback?: { positive: string; negative: string }
   elaboration?: string
 }
 
 export interface Result {
-  task: Task
-  selection: Selection
+  taskDefinition: TaskDefinition
   evaluation: boolean[]
-  verdict?: boolean
-  submitted?: boolean
 }
 
 export interface Paper {
   title: string
-  tasks: Result[]
+  tasks: TaskDefinition[]
   postponeFeedback?: boolean
 }

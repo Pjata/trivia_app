@@ -1,18 +1,16 @@
-import { Paper, Task } from '../model/model'
+import { Paper, TaskDefinition } from '../model/model'
 
-export function createPaper(tasks: Task[]): Paper {
+export const createPaper = (taskDefinitions: TaskDefinition[]): Paper => {
   const paper: Paper = {
     title: 'Example paper',
-    tasks: [],
+    tasks: taskDefinitions.map((taskDefinition, taskIndex) => ({
+      ...taskDefinition,
+      id: taskIndex,
+      answers: taskDefinition.answers.map((answer, answerIndex) => ({...answer, id: answerIndex})),
+    })),
   }
 
-  tasks.forEach((task) =>
-    paper.tasks.push({
-      task,
-      selection: [],
-      evaluation: [],
-    })
-  )
+  paper.tasks.forEach(task => task.feedback && (task.feedback = {...task.feedback}))
 
   return paper
 }

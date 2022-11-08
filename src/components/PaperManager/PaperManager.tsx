@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import { Heading } from '@instructure/ui'
-import React, { useState } from 'react'
-import { Paper, Result, Selection, Task } from '../../model/model'
-import TaskManager from '../TaskManager/TaskManager'
+import { Paper, Result, Selection, TaskDefinition } from '../../model/model'
+import ResultPresenter from '../ResultPresenter/ResultPresenter'
+import TaskResolver from '../TaskResolver/TaskResolver'
 
 interface PaperManagerProps {
   paper: Paper
@@ -25,21 +26,8 @@ const PaperManager = ({ paper }: PaperManagerProps) => {
     }
   }
 
-  const onSubmit = (selection: Selection) => {
-    console.log('[PaperManager] onSubmit', selection)
-
-    const task = {...currentTask}
-
-    task.submitted = true
-    task.selection = [...selection]
-
-    task.evaluation = task.task.answers.map((option, index) => !!option.isAnswer == selection.includes(generateKey(task.task, index)))
-  
-    task.verdict = task.evaluation.every(
-      (verdict) => verdict
-    )
-
-    setResults((currentResults) => [...currentResults, task])
+  const onSubmit = (result: Result) => {
+    setResults((currentResultsState) => [...currentResultsState, result])
   }
 
   return (
@@ -52,14 +40,26 @@ const PaperManager = ({ paper }: PaperManagerProps) => {
         <Heading level="h2">{paper.title}</Heading>
       </div>
       {complete ? (
-        paper.tasks.map((task, taskIndex) => (
-          <TaskManager
-            task={task}
-            key={generateKey(task.task, taskIndex)}
+        results.map((result, resultIndex) => (
+          <ResultPresenter
+            result={result}
+            key={generateKey(result.taskDefinition, resultIndex)}
           />
         ))
+      ) : results[index] ? (
+        <ResultPresenter
+          result={results[index]}
+          onConfirm={onNext}
+          confirmButtonText={
+            index >= paper.tasks.length - 1 ? 'See results' : void 0
+          }
+        />
       ) : (
-        <TaskManager task={paper.tasks[index]} onNext={onNext} key={generateKey(currentTask.task, index)} onSubmit={onSubmit} />
+        <TaskResolver
+          task={paper.tasks[index]}
+          key={generateKey(currentTask, index)}
+          onConfirm={onSubmit}
+        />
       )}
       <div className="footer"></div>
     </>
@@ -68,5 +68,5 @@ const PaperManager = ({ paper }: PaperManagerProps) => {
 
 export default PaperManager
 
-const generateKey = (task: Task, index: number): string =>
+const generateKey = (task: TaskDefinition, index: number): string =>
   `${task.question}-${index}`

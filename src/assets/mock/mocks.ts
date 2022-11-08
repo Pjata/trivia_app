@@ -1,6 +1,6 @@
-import { Task } from '../../model/model'
+import { TaskDefinition } from '../../model/model'
 
-export const exampleTask: Task = {
+export const exampleTask: TaskDefinition = {
   question: 'Which of these seem a good idea?',
   answers: [
     {
@@ -26,7 +26,7 @@ export const exampleTask: Task = {
     "Rose bushes have thorns, its very painful. Hiking and MTBking are healthy and very enjoyable activities. And - just don't bang your had against the wall.",
 }
 
-export const exampleTasks: Task[] = [
+export const exampleTasks: TaskDefinition[] = [
   exampleTask,
   {
     question: 'Which of the following are vegetables?',
@@ -94,8 +94,8 @@ export const exampleTasks: Task[] = [
       },
     ],
     feedback: {
-      positive: 'You seem to agree with my point of view.',
-      negative: 'Which religion do you belong to?',
+      positive: 'You\'re right - according to me...',
+      negative: 'You picked some wrong answers or you\'re just don\'t agree with my opinion.',
     },
     elaboration:
       'Do you beong to my church, where tomatoes and peppers can be praised as both vegetables and fruits at the same time? Depending on whether we define vegetables from a botanical or gastronomical angle, tomatoes and peppers could be both, as they are in fact crops, but they are often used as vegetables in food.',

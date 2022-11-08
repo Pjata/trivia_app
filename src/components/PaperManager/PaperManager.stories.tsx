@@ -1,12 +1,12 @@
 /* eslint-disable */
-import PaperManager from './PaperManager';
+import PaperManager from './PaperManager'
 
 export default {
-  title: "PaperManager",
-};
+  title: 'PaperManager',
+}
 
-export const Default = () => <PaperManager />;
+export const Default = () => <PaperManager />
 
 Default.story = {
   name: 'default',
-};
+}

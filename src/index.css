@@ -6,6 +6,8 @@
   --space-xx-large: 48px;
   --space-xxx-large: 64px;
 
+  --success-color: #00c9a6;
+  --error-color: #FF7B9F;
   --border-color: #ddd;
 }
 
@@ -46,12 +48,25 @@ p {
   padding: 16px;
 }
 
+.answers {
+  padding: 2px;
+}
+
 .validated-answer {
   display: flex;
 }
+.validated-answer:not(:last-of-type) {
+  margin-bottom: 12px;
+}
 
-.verdict {
+.answer-verdict {
   margin-left: 16px;
+}
+.answer-verdict.answer-correct {
+  color: var(--success-color);
+}
+.answer-verdict.answer-incorrect {
+  color: var(--error-color);
 }
 
 .footer {
@@ -97,6 +112,9 @@ p {
 
 /* bottom spacing*/
 
+.margin-bottom-12 {
+  margin-bottom: 12px;
+}
 .margin-bottom-xx-large {
   margin-bottom: var(--space-xx-large);
 }

@@ -1,9 +1,8 @@
-import React from 'react'
 import ReactDOM from 'react-dom'
-import PaperManager from './PaperManager'
+import ResultPresenter from './ResultPresenter'
 
 it('It should mount', () => {
   const div = document.createElement('div')
-  ReactDOM.render(<PaperManager />, div)
+  ReactDOM.render(<ResultPresenter />, div)
   ReactDOM.unmountComponentAtNode(div)
 })
